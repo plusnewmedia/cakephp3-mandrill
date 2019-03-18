@@ -74,8 +74,8 @@ class MandrillTransport extends AbstractTransport
 
         // Initiate a new Mandrill Message parameter array
         $message = [
-            'html'                      => $email->message(\Cake\Network\Email\Email::MESSAGE_HTML),
-            'text'                      => $email->message(\Cake\Network\Email\Email::MESSAGE_TEXT),
+            'html'                      => $email->message(\Cake\Mailer\Email::MESSAGE_HTML),
+            'text'                      => $email->message(\Cake\Mailer\Email::MESSAGE_TEXT),
             'subject'                   => $this->_decode($email->getSubject()), // Decode because Mandrill is encoding
             'from_email'                => key($email->getFrom()), // Make sure the domain is registered and verified within Mandrill
             'from_name'                 => current($email->getFrom()),
