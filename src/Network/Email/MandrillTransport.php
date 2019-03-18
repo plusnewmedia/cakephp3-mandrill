@@ -12,11 +12,11 @@
 namespace MandrillEmail\Network\Email;
 
 use Cake\Core\Configure;
-use Cake\Network\Email\Email;
+use Cake\Mailer\Email;
 use Cake\Network\Exception\SocketException;
-use Cake\Network\Http\Client;
+use Cake\Http\Client;
 use Cake\Utility\Hash;
-use Cake\Network\Email\AbstractTransport;
+use Cake\Mailer\AbstractTransport;
 
 /**
  * Send mail using mail() function
@@ -76,22 +76,22 @@ class MandrillTransport extends AbstractTransport
         $message = [
             'html'                      => $email->message(\Cake\Network\Email\Email::MESSAGE_HTML),
             'text'                      => $email->message(\Cake\Network\Email\Email::MESSAGE_TEXT),
-            'subject'                   => $this->_decode($email->subject()), // Decode because Mandrill is encoding
-            'from_email'                => key($email->from()), // Make sure the domain is registered and verified within Mandrill
-            'from_name'                 => current($email->from()),
+            'subject'                   => $this->_decode($email->getSubject()), // Decode because Mandrill is encoding
+            'from_email'                => key($email->getFrom()), // Make sure the domain is registered and verified within Mandrill
+            'from_name'                 => current($email->getFrom()),
             'to'                        => [ ],
-            'headers'                   => ['Reply-To' => is_null(key($email->replyTo()))?key($email->from()):key($email->replyTo())],
+            'headers'                   => ['Reply-To' => is_null(key($email->getReplyTo()))?key($email->getFrom()):key($email->getReplyTo())],
             'recipient_metadata'        => [ ],
             'attachments'               => [ ],
             'images'                    => [ ]
         ];
 
         // Merge Mandrill Parameters
-        $message = array_merge($message, Hash::merge($this->defaultParameters, $email->profile()['Mandrill']));
+        $message = array_merge($message, Hash::merge($this->defaultParameters, $email->getProfile()['Mandrill']));
 
         // Add receipients
-        foreach (['to', 'cc', 'bcc'] as $type) {
-            foreach ($email->{$type}() as $mail => $name) {
+        foreach (['to' => 'getTo', 'cc' => 'getCc', 'bcc' => 'getBcc'] as $type => $method) {
+            foreach ($email->{$method}() as $mail => $name) {
                 $message['to'][] = [
                     'email' => $mail,
                     'name'  => $name,
@@ -99,7 +99,7 @@ class MandrillTransport extends AbstractTransport
                 ];
             }
         }
-        if ($this->config('Mandrill.preserve_recipients')) {
+        if ($this->getConfig('Mandrill.preserve_recipients')) {
             $message['preserve_recipients'] = true;
         }
         // Attachments
@@ -232,7 +232,7 @@ class MandrillTransport extends AbstractTransport
  */
     protected function _attachments(Email $email, $message = [])
     {
-        foreach ($email->attachments() as $filename => $attach) {
+        foreach ($email->getAttachments() as $filename => $attach) {
             $content = base64_encode(file_get_contents($attach['file']));
 
             if (isset($attach['contentId'])) {
