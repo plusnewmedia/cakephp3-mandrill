@@ -1,5 +1,5 @@
 {
-    "name": "lennaert/cakephp3-mandrill",
+    "name": "plusnewmedia/cakephp3-mandrill",
     "description": "Mandrill Email Transport for CakePHP 3",
     "type": "cakephp-plugin",
     "keywords": ["cakephp", "mandrill"],
@@ -16,8 +16,8 @@
         "source": "https://github.com/Lennaert/cakephp3-mandrill"
     },
     "require": {
-        "php": ">=5.4.16",
-        "cakephp/cakephp": "~3"
+        "php": ">=7",
+        "cakephp/cakephp": "~3.6"
     },
     "autoload": {
         "psr-4": {
